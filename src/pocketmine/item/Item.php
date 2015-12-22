@@ -300,6 +300,9 @@ class Item{
 	const REDSTONE_LAMP = 123;
 	const LIT_REDSTONE_LAMP = 124;
 	const PORTAL = 90;
+	const NETHER_WART_BLOCK = 115;
+	const NETHER_WART = 372;
+	const REDSTONE_WIRE_BLOCK = 55;
 	
 	//Normal Item IDs
 
@@ -467,6 +470,7 @@ class Item{
 	const CLOWN_FISH = 461;
 	const PUFFER_FISH = 462;
 	const COOKED_SALMON = 463;
+	
 
 
 	/** @var \SplFixedArray */
@@ -613,7 +617,7 @@ class Item{
 			self::$list[self::COOKED_SALMON] = CookedSalmon::class;
 			//3317+
 			self::$list[self::BREWING_STAND] = BrewingStand::class;
-
+			self::$list[self::NETHER_WART] = NetherWart::class;
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
 					self::$list[$i] = Block::$list[$i];
@@ -780,7 +784,6 @@ class Item{
 
 		self::addCreativeItem(Item::get(Item::TRAPPED_CHEST, 0));
 		self::addCreativeItem(Item::get(Item::FURNACE, 0));
-		// TODO: Brewing stand
 		// TODO: Note Block
 		self::addCreativeItem(Item::get(Item::END_PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::ANVIL, 0));
@@ -971,7 +974,6 @@ class Item{
 		self::addCreativeItem(Item::get(Item::GOLD_LEGGINGS, 0));
 		self::addCreativeItem(Item::get(Item::GOLD_BOOTS, 0));
 		// TODO: Lever
-		// TODO: Redstone lamp
 		// TODO: Redstone torch
 		// TODO: Wood pressure plate
 		// TODO: Stone pressure plate
@@ -1080,6 +1082,7 @@ class Item{
 		self::addCreativeItem(Item::get(Item::REDSTONE_LAMP, 0));
 		self::addCreativeItem(Item::get(Item::PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::GLOWING_OBSIDIAN, 0));
+		self::addCreativeItem(Item::get(Item::NETHER_WART, 0));
 	}
 
 	public static function clearCreativeItems(){

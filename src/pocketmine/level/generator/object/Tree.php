@@ -66,6 +66,12 @@ abstract class Tree{
 
 				//}
 				break;
+			case Sapling::ACACIA:
+				$tree = new AcaciaTree();
+				break;
+			case Sapling::DARK_OAK:
+				$tree = new DarkOakTree();
+				break;
 		}
 		if($tree->canPlaceObject($level, $x, $y, $z, $random)){
 			$tree->placeObject($level, $x, $y, $z, $random);

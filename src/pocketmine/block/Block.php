@@ -269,6 +269,8 @@ class Block extends Position implements Metadatable{
 	const REDSTONE_LAMP = 123;
 	const LIT_REDSTONE_LAMP = 124;
 	const PORTAL = 90;
+	const NETHER_WART_BLOCK = 115;
+	const REDSTONE_WIRE_BLOCK = 55;
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -490,6 +492,8 @@ class Block extends Position implements Metadatable{
 			self::$list[self::REDSTONE_LAMP] = RedstoneLamp::class;
 			self::$list[self::LIT_REDSTONE_LAMP] = LitRedstoneLamp::class;
 			self::$list[self::PORTAL] = Portal::class;
+			self::$list[self::NETHER_WART_BLOCK] = NetherWart::class;
+			self::$list[self::REDSTONE_WIRE_BLOCK] = RedstoneWire::class;
 
 			foreach(self::$list as $id => $class){
 				if($class !== null){
