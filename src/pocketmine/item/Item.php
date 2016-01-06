@@ -108,7 +108,8 @@ class Item{
 
 	const BED_BLOCK = 26;
 
-
+    const NETHER_REACTOR = 247;
+    
 	const COBWEB = 30;
 	const TALL_GRASS = 31;
 	const BUSH = 32;
@@ -885,12 +886,12 @@ class Item{
 		// TODO: self::addCreativeItem(Item::get(Item::POWERED_RAILS, 0));
 		// TODO: Detector rail
 		// TODO: Activator rail
-		self::addCreativeItem(Item::get(Item::TORCH, 0));
 		self::addCreativeItem(Item::get(Item::BUCKET, 0));
 		self::addCreativeItem(Item::get(Item::BUCKET, 1));
 		self::addCreativeItem(Item::get(Item::BUCKET, 8));
 		self::addCreativeItem(Item::get(Item::BUCKET, 10));
 		self::addCreativeItem(Item::get(Item::TNT, 0));
+		self::addCreativeItem(Item::get(Item::TORCH, 0));
 		self::addCreativeItem(Item::get(Item::REDSTONE, 0));
 		self::addCreativeItem(Item::get(Item::BOW, 0));
 		// TODO: fishing rod
@@ -1083,6 +1084,9 @@ class Item{
 		self::addCreativeItem(Item::get(Item::PORTAL, 0));
 		self::addCreativeItem(Item::get(Item::GLOWING_OBSIDIAN, 0));
 		self::addCreativeItem(Item::get(Item::NETHER_WART, 0));
+		self::addCreativeItem(Item::get(Item::NETHER_REACTOR, 0));
+		self::addCreativeItem(Item::get(Item::NETHER_REACTOR, 1));
+		self::addCreativeItem(Item::get(Item::NETHER_REACTOR, 2));
 	}
 
 	public static function clearCreativeItems(){

@@ -19,13 +19,15 @@
  *
 */
 
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\level\sound\DoorSound;
 
 class Trapdoor extends Transparent{
 
@@ -56,7 +58,7 @@ class Trapdoor extends Transparent{
 		if(($damage & 0x08) > 0){
 			$bb = new AxisAlignedBB(
 				$this->x,
-				$this->y + 1 - $f,
+				$this->y + $f,
 				$this->z,
 				$this->x + 1,
 				$this->y + 1,
@@ -78,7 +80,7 @@ class Trapdoor extends Transparent{
 				$bb->setBounds(
 					$this->x,
 					$this->y,
-					$this->z + 1 - $f,
+					$this->z + $f,
 					$this->x + 1,
 					$this->y + 1,
 					$this->z + 1
@@ -95,7 +97,7 @@ class Trapdoor extends Transparent{
 			}
 			if(($damage & 0x03) === 2){
 				$bb->setBounds(
-					$this->x + 1 - $f,
+					$this->x + $f,
 					$this->y,
 					$this->z,
 					$this->x + 1,
@@ -121,17 +123,16 @@ class Trapdoor extends Transparent{
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if(($target->isTransparent() === false or $target->getId() === self::SLAB) and $face !== 0 and $face !== 1){
 			$faces = [
-				2 => 0,
-				3 => 1,
-				4 => 2,
-				5 => 3,
+				2 => 3,
+				3 => 2,
+				4 => 1,
+				5 => 0,
 			];
 			$this->meta = $faces[$face] & 0x03;
 			if($fy > 0.5){
 				$this->meta |= 0x08;
 			}
 			$this->getLevel()->setBlock($block, $this, true, true);
-
 			return true;
 		}
 
@@ -145,9 +146,9 @@ class Trapdoor extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		$this->meta ^= 0x04;
+		$this->meta |= 0x04;
 		$this->getLevel()->setBlock($this, $this, true);
-		$this->level->addSound(new DoorSound($this));
+		$this->getLevel()->addSound(new DoorSound($this));
 		return true;
 	}
 

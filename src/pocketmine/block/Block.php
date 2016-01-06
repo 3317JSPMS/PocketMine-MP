@@ -271,6 +271,7 @@ class Block extends Position implements Metadatable{
 	const PORTAL = 90;
 	const NETHER_WART_BLOCK = 115;
 	const REDSTONE_WIRE_BLOCK = 55;
+	const NETHER_REACTOR = 247;
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -494,7 +495,8 @@ class Block extends Position implements Metadatable{
 			self::$list[self::PORTAL] = Portal::class;
 			self::$list[self::NETHER_WART_BLOCK] = NetherWart::class;
 			self::$list[self::REDSTONE_WIRE_BLOCK] = RedstoneWire::class;
-
+			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
+			
 			foreach(self::$list as $id => $class){
 				if($class !== null){
 					/** @var Block $block */
