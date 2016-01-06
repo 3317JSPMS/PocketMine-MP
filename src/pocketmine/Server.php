@@ -108,7 +108,6 @@ use pocketmine\tile\EnchantTable;
 use pocketmine\tile\Furnace;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Tile;
-use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Config;
 use pocketmine\utils\LevelException;
@@ -153,9 +152,6 @@ class Server{
 	private $pluginManager = null;
 
 	private $profilingTickRate = 20;
-
-	/** @var AutoUpdater */
-	private $updater = null;
 
 	/** @var ServerScheduler */
 	private $scheduler = null;
@@ -585,12 +581,6 @@ class Server{
 		return $this->levelMetadata;
 	}
 
-	/**
-	 * @return AutoUpdater
-	 */
-	public function getUpdater(){
-		return $this->updater;
-	}
 
 	/**
 	 * @return PluginManager
@@ -1635,8 +1625,6 @@ class Server{
 		$this->network->registerInterface(new RakLibInterface($this));
 
 		$this->pluginManager->loadPlugins($this->pluginPath);
-
-		$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
