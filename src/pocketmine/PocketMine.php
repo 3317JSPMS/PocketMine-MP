@@ -77,7 +77,7 @@ namespace pocketmine {
 	const CODENAME = "[MASHUP]";
 	const MINECRAFT_VERSION = "v0.14.0 alpha";
 	const MINECRAFT_VERSION_NETWORK = "0.14.0";
-
+ 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
 	 * Most of them are hacks to fix date-related bugs, or basic functions used after this
