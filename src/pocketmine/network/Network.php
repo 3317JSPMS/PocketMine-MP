@@ -1,5 +1,4 @@
 <?php
-
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -18,12 +17,10 @@
  *
  *
 */
-
 /**
  * Network-related classes
  */
 namespace pocketmine\network;
-
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\AddItemEntityPacket;
 use pocketmine\network\protocol\AddPaintingPacket;
@@ -67,7 +64,6 @@ use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetHealthPacket;
-use pocketmine\network\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
 use pocketmine\network\protocol\SetTimePacket;
 use pocketmine\network\protocol\StartGamePacket;
@@ -75,104 +71,64 @@ use pocketmine\network\protocol\TakeItemEntityPacket;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\UseItemPacket;
+use pocketmine\network\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\protocol\PlayerListPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
-
 class Network{
-
 	public static $BATCH_THRESHOLD = 512;
-
-	/** @deprecated */
-	const CHANNEL_NONE = 0;
-	/** @deprecated */
-	const CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
-	/** @deprecated */
-	const CHANNEL_WORLD_CHUNKS = 2; //Chunk sending
-	/** @deprecated */
-	const CHANNEL_MOVEMENT = 3; //Movement sending
-	/** @deprecated */
-	const CHANNEL_BLOCKS = 4; //Block updates or explosions
-	/** @deprecated */
-	const CHANNEL_WORLD_EVENTS = 5; //Entity, level or tile entity events
-	/** @deprecated */
-	const CHANNEL_ENTITY_SPAWNING = 6; //Entity spawn/despawn channel
-	/** @deprecated */
-	const CHANNEL_TEXT = 7; //Chat and other text stuff
-	/** @deprecated */
-	const CHANNEL_END = 31;
-
 	/** @var \SplFixedArray */
 	private $packetPool;
-
 	/** @var Server */
 	private $server;
-
 	/** @var SourceInterface[] */
 	private $interfaces = [];
-
 	/** @var AdvancedSourceInterface[] */
 	private $advancedInterfaces = [];
-
 	private $upload = 0;
 	private $download = 0;
-
 	private $name;
-
 	public function __construct(Server $server){
-
 		$this->registerPackets();
-
 		$this->server = $server;
-
 	}
-
 	public function addStatistics($upload, $download){
 		$this->upload += $upload;
 		$this->download += $download;
 	}
-
 	public function getUpload(){
 		return $this->upload;
 	}
-
 	public function getDownload(){
 		return $this->download;
 	}
-
 	public function resetStatistics(){
 		$this->upload = 0;
 		$this->download = 0;
 	}
-
 	/**
 	 * @return SourceInterface[]
 	 */
 	public function getInterfaces(){
 		return $this->interfaces;
 	}
-
 	public function processInterfaces(){
 		foreach($this->interfaces as $interface){
 			try {
 				$interface->process();
-			}catch(\Exception $e){
+			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				if(\pocketmine\DEBUG > 1){
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
+					$logger->logException($e);
 				}
-
 				$interface->emergencyShutdown();
 				$this->unregisterInterface($interface);
 				$logger->critical($this->server->getLanguage()->translateString("pocketmine.server.networkError", [get_class($interface), $e->getMessage()]));
 			}
 		}
 	}
-
 	/**
 	 * @param SourceInterface $interface
 	 */
@@ -184,7 +140,6 @@ class Network{
 		}
 		$interface->setName($this->name);
 	}
-
 	/**
 	 * @param SourceInterface $interface
 	 */
@@ -192,7 +147,6 @@ class Network{
 		unset($this->interfaces[$hash = spl_object_hash($interface)],
 			$this->advancedInterfaces[$hash]);
 	}
-
 	/**
 	 * Sets the server name shown on each interface Query
 	 *
@@ -204,17 +158,14 @@ class Network{
 			$interface->setName($this->name);
 		}
 	}
-
 	public function getName(){
 		return $this->name;
 	}
-
 	public function updateName(){
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
-
 	/**
 	 * @param int        $id 0-255
 	 * @param DataPacket $class
@@ -222,11 +173,9 @@ class Network{
 	public function registerPacket($id, $class){
 		$this->packetPool[$id] = new $class;
 	}
-
 	public function getServer(){
 		return $this->server;
 	}
-
 	public function processBatch(BatchPacket $packet, Player $p){
 		$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
 		$len = strlen($str);
@@ -235,46 +184,34 @@ class Network{
 			while($offset < $len){
 				$pkLen = Binary::readInt(substr($str, $offset, 4));
 				$offset += 4;
-
 				$buf = substr($str, $offset, $pkLen);
 				$offset += $pkLen;
-
-				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
+				if(($pk = $this->getPacket(ord($buf{1}))) !== null){ // #blameshoghi
 					if($pk::NETWORK_ID === Info::BATCH_PACKET){
 						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
 					}
-
-					$pk->setBuffer($buf, 1);
-
+					$pk->setBuffer($buf, 2); // #blameshoghi
 					$pk->decode();
 					$p->handleDataPacket($pk);
-
 					if($pk->getOffset() <= 0){
 						return;
 					}
 				}
 			}
-		}catch(\Exception $e){
+		}catch(\Throwable $e){
 			if(\pocketmine\DEBUG > 1){
 				$logger = $this->server->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-					$logger->logException($e);
-				}
+				$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+				$logger->logException($e);
 			}
 		}
 	}
-
 	/**
 	 * @param $id
 	 *
 	 * @return DataPacket
 	 */
 	public function getPacket($id){
-		if(\pocketmine\DEBUG > 2){
-			echo "ReceiveDataPacket: 0x".bin2hex(chr($id))."\n";
-		}
-
 		/** @var DataPacket $class */
 		$class = $this->packetPool[$id];
 		if($class !== null){
@@ -282,8 +219,6 @@ class Network{
 		}
 		return null;
 	}
-
-
 	/**
 	 * @param string $address
 	 * @param int    $port
@@ -294,7 +229,6 @@ class Network{
 			$interface->sendRawPacket($address, $port, $payload);
 		}
 	}
-
 	/**
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
 	 *
@@ -306,10 +240,8 @@ class Network{
 			$interface->blockAddress($address, $timeout);
 		}
 	}
-
 	private function registerPackets(){
 		$this->packetPool = new \SplFixedArray(256);
-
 		$this->registerPacket(ProtocolInfo::LOGIN_PACKET, LoginPacket::class);
 		$this->registerPacket(ProtocolInfo::PLAY_STATUS_PACKET, PlayStatusPacket::class);
 		$this->registerPacket(ProtocolInfo::DISCONNECT_PACKET, DisconnectPacket::class);
